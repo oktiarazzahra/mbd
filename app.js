@@ -8,6 +8,7 @@ app.use('/api/mahasiswa', require('./routes/mahasiswa'));
 app.use('/api/dosen', require('./routes/dosen'));
 app.use('/api/proposal', require('./routes/proposal'));
 app.use('/api/pembimbing', require('./routes/pembimbing'));
+app.use('/api/admin', require('./routes/admin'));
 
 
 const PORT = 3000;

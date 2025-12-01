@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { assignPembimbing, giveFeedback, getProposalsByDosen } = require('../controllers/pembimbingController');
+const { giveFeedback, getProposalsByDosen } = require('../controllers/pembimbingController');
+const { verifyDosen } = require('../middleware/auth');
 
-router.post('/assign', assignPembimbing);
-router.post('/feedback', giveFeedback);
-router.get('/proposals/:dosen_id', getProposalsByDosen);
+router.post('/feedback', verifyDosen, giveFeedback);     // Dosen beri feedback
+router.get('/proposals', verifyDosen, getProposalsByDosen); // Dosen lihat proposal bimbingan (tidak perlu :dosen_id lagi)
 
 module.exports = router;
