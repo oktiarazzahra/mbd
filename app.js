@@ -11,5 +11,10 @@ app.use('/api/pembimbing', require('./routes/pembimbing'));
 app.use('/api/admin', require('./routes/admin'));
 
 
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Only start server if this file is run directly (not imported for testing)
+if (require.main === module) {
+  const PORT = 3000;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+module.exports = app;

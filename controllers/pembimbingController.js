@@ -20,4 +20,15 @@ const getProposalsByDosen = (req, res) => {
   });
 };
 
-module.exports = { giveFeedback, getProposalsByDosen };
+// Get riwayat/history proposal
+const getProposalHistory = (req, res) => {
+  const proposal_id = req.params.id;
+  
+  const query = `CALL sp_get_proposal_history(?);`;
+  conn.query(query, [proposal_id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results[0]);
+  });
+};
+
+module.exports = { giveFeedback, getProposalsByDosen, getProposalHistory };

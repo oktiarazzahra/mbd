@@ -8,7 +8,7 @@ const registerMahasiswa = (req, res) => {
   conn.query(query, [nim, nama, email, password, prodi, angkatan], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     const output = results[1][0];
-    res.json(output);
+    res.status(201).json(output);
   });
 };
 
@@ -66,4 +66,71 @@ const loginMahasiswa = (req, res) => {
   });
 };
 
-module.exports = { registerMahasiswa, loginMahasiswa };
+// Get semua proposal milik mahasiswa yang login
+const getMyProposals = (req, res) => {
+  const mahasiswa_id = req.user.id; // dari JWT token
+  
+  const query = `CALL sp_get_mahasiswa_proposals(?);`;
+  conn.query(query, [mahasiswa_id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results[0]);
+  });
+};
+
+// Get profile mahasiswa
+const getProfile = (req, res) => {
+  const mahasiswa_id = req.user.id;
+  
+  const query = `SELECT mahasiswa_id, nim, nama, email, prodi, angkatan FROM mahasiswa WHERE mahasiswa_id = ?`;
+  conn.query(query, [mahasiswa_id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'Mahasiswa tidak ditemukan' });
+    }
+    
+    res.json(results[0]);
+  });
+};
+
+// Update profil mahasiswa
+const updateProfile = (req, res) => {
+  const mahasiswa_id = req.user.id;
+  const { nama, prodi } = req.body;
+  
+  if (!nama || !prodi) {
+    return res.status(400).json({ message: 'Nama dan prodi wajib diisi' });
+  }
+  
+  const query = `CALL sp_update_mahasiswa_profile(?, ?, ?, @message); SELECT @message AS message;`;
+  conn.query(query, [mahasiswa_id, nama, prodi], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    const output = results[1][0];
+    res.json(output);
+  });
+};
+
+// Change password mahasiswa
+const changePassword = (req, res) => {
+  const mahasiswa_id = req.user.id;
+  const { old_password, new_password } = req.body;
+  
+  if (!old_password || !new_password) {
+    return res.status(400).json({ message: 'Password lama dan baru wajib diisi' });
+  }
+  
+  const query = `CALL sp_change_password_mahasiswa(?, ?, ?, @message); SELECT @message AS message;`;
+  conn.query(query, [mahasiswa_id, old_password, new_password], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    const output = results[1][0];
+    
+    if (output.message.includes('Error')) {
+      return res.status(400).json(output);
+    }
+    res.json(output);
+  });
+};
+
+module.exports = { registerMahasiswa, loginMahasiswa, getMyProposals, getProfile, updateProfile, changePassword };

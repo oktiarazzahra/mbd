@@ -8,7 +8,7 @@ const submitProposal = (req, res) => {
   conn.query(query, [mahasiswa_id, judul, abstrak, catatan], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     const output = results[1][0];
-    res.json(output);
+    res.status(201).json(output);
   });
 };
 

@@ -1,0 +1,720 @@
+{
+	"info": {
+		"_postman_id": "mbd-api-collection",
+		"name": "MBD API Collection",
+		"description": "Complete API testing untuk MBD System - menggunakan data existing dari database",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "Login Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('admin_token', jsonData.token);",
+									"    console.log('✅ Admin token saved');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "login"]
+						},
+						"description": "Login dengan admin yang ada di database"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Mahasiswa (Rina)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('mahasiswa_token', jsonData.token);",
+									"    pm.environment.set('mahasiswa_id', jsonData.user.mahasiswa_id);",
+									"    console.log('✅ Mahasiswa token saved, ID:', jsonData.user.mahasiswa_id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"rina.susanti@student.univ.ac.id\",\n  \"password\": \"pw1\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/mahasiswa/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "mahasiswa", "login"]
+						},
+						"description": "Login mahasiswa: Rina Susanti (ID: 1)"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Dosen (Dr. Andi)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('dosen_token', jsonData.token);",
+									"    pm.environment.set('dosen_id', jsonData.user.dosen_id);",
+									"    console.log('✅ Dosen token saved, ID:', jsonData.user.dosen_id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"andi.wijaya@univ.ac.id\",\n  \"password\": \"pass1\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dosen/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dosen", "login"]
+						},
+						"description": "Login dosen: Dr. Andi Wijaya (ID: 1)"
+					},
+					"response": []
+				},
+				{
+					"name": "Register Mahasiswa Baru",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.mahasiswa_id) {",
+									"        pm.environment.set('new_mahasiswa_id', jsonData.mahasiswa_id);",
+									"        console.log('✅ New mahasiswa ID saved:', jsonData.mahasiswa_id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nim\": \"2024001\",\n  \"nama\": \"Mahasiswa Testing Postman\",\n  \"email\": \"testing@postman.com\",\n  \"password\": \"test123\",\n  \"prodi\": \"Teknik Informatika\",\n  \"angkatan\": 2024\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/mahasiswa/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "mahasiswa", "register"]
+						},
+						"description": "Register mahasiswa baru untuk testing"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints"
+		},
+		{
+			"name": "2. Mahasiswa Operations",
+			"item": [
+				{
+					"name": "Get My Proposals",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{mahasiswa_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/mahasiswa/proposals",
+							"host": ["{{base_url}}"],
+							"path": ["api", "mahasiswa", "proposals"]
+						},
+						"description": "Melihat proposal milik mahasiswa yang login"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{mahasiswa_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/mahasiswa/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "mahasiswa", "profile"]
+						},
+						"description": "Melihat profile mahasiswa"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{mahasiswa_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nama\": \"Rina Susanti Updated\",\n  \"prodi\": \"Sistem Informasi\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/mahasiswa/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "mahasiswa", "profile"]
+						},
+						"description": "Update profile mahasiswa"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{mahasiswa_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"old_password\": \"pw1\",\n  \"new_password\": \"newpassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/mahasiswa/change-password",
+							"host": ["{{base_url}}"],
+							"path": ["api", "mahasiswa", "change-password"]
+						},
+						"description": "Ganti password mahasiswa"
+					},
+					"response": []
+				}
+			],
+			"description": "Mahasiswa operations"
+		},
+		{
+			"name": "3. Proposal Operations",
+			"item": [
+				{
+					"name": "Submit New Proposal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.proposal_id) {",
+									"        pm.environment.set('new_proposal_id', jsonData.proposal_id);",
+									"        console.log('✅ New proposal ID saved:', jsonData.proposal_id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{mahasiswa_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"judul\": \"Sistem Rekomendasi Film Menggunakan Collaborative Filtering\",\n  \"abstrak\": \"Penelitian implementasi algoritma collaborative filtering untuk sistem rekomendasi film berbasis rating pengguna\",\n  \"catatan\": \"Proposal untuk tugas akhir\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/proposal",
+							"host": ["{{base_url}}"],
+							"path": ["api", "proposal"]
+						},
+						"description": "Submit proposal baru"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Proposal Detail (ID: 1)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{mahasiswa_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/proposal/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "proposal", "1"]
+						},
+						"description": "Lihat detail proposal ID 1 (Sistem Informasi Manajemen Perpustakaan)"
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Proposal (ID: 1)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{mahasiswa_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"judul\": \"Sistem Informasi Manajemen Perpustakaan Digital (Updated)\",\n  \"abstrak\": \"Penelitian tentang pembangunan sistem informasi perpustakaan berbasis web dengan fitur katalog digital, peminjaman online, dan notifikasi otomatis\",\n  \"catatan\": \"Ditambahkan fitur notifikasi sesuai saran pembimbing\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/proposal/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "proposal", "1"]
+						},
+						"description": "Update proposal existing"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Proposal",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{mahasiswa_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/proposal/{{new_proposal_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "proposal", "{{new_proposal_id}}"]
+						},
+						"description": "Delete proposal yang baru dibuat"
+					},
+					"response": []
+				}
+			],
+			"description": "Proposal management"
+		},
+		{
+			"name": "4. Dosen Operations",
+			"item": [
+				{
+					"name": "Get Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{dosen_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dosen/statistics",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dosen", "statistics"]
+						},
+						"description": "Statistik dosen"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{dosen_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nama\": \"Dr. Andi Wijaya, M.Kom\",\n  \"bidang_keahlian\": \"Sistem Informasi & Database\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dosen/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dosen", "profile"]
+						},
+						"description": "Update profile dosen"
+					},
+					"response": []
+				}
+			],
+			"description": "Dosen operations"
+		},
+		{
+			"name": "5. Pembimbing Operations",
+			"item": [
+				{
+					"name": "Get My Supervised Proposals",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{dosen_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pembimbing/proposals",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pembimbing", "proposals"]
+						},
+						"description": "Proposal yang dibimbing dosen ini"
+					},
+					"response": []
+				},
+				{
+					"name": "Give Feedback",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{dosen_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"proposal_id\": 1,\n  \"feedback\": \"Proposal sudah cukup baik. Harap tambahkan diagram use case dan activity diagram pada bagian analisis sistem.\",\n  \"status\": \"Revisi\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/pembimbing/feedback",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pembimbing", "feedback"]
+						},
+						"description": "Berikan feedback untuk proposal ID 1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Proposal History (ID: 1)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{dosen_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/pembimbing/proposal-history/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "pembimbing", "proposal-history", "1"]
+						},
+						"description": "History feedback proposal ID 1"
+					},
+					"response": []
+				}
+			],
+			"description": "Pembimbing (supervisor) operations"
+		},
+		{
+			"name": "6. Admin Operations",
+			"item": [
+				{
+					"name": "Get All Mahasiswa",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/mahasiswa",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "mahasiswa"]
+						},
+						"description": "List semua mahasiswa"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Dosen",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/dosen",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "dosen"]
+						},
+						"description": "List semua dosen"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Proposals",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/proposal",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "proposal"]
+						},
+						"description": "List semua proposal"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Dosen",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.dosen_id) {",
+									"        pm.environment.set('new_dosen_id', jsonData.dosen_id);",
+									"        console.log('✅ New dosen ID saved:', jsonData.dosen_id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nip\": \"D099\",\n  \"nama\": \"Dr. Testing Postman, M.Kom\",\n  \"email\": \"testing.postman@univ.ac.id\",\n  \"password\": \"dosen123\",\n  \"bidang_keahlian\": \"Software Testing\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/dosen",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "dosen"]
+						},
+						"description": "Tambah dosen baru"
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Pembimbing",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"proposal_id\": 3,\n  \"dosen_id\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/assign-pembimbing",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "assign-pembimbing"]
+						},
+						"description": "Assign dosen ID 2 (Prof. Siti) sebagai pembimbing proposal ID 3"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Pembimbing",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"proposal_id\": 3,\n  \"dosen_id\": 3\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/remove-pembimbing",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "remove-pembimbing"]
+						},
+						"description": "Remove pembimbing dari proposal"
+					},
+					"response": []
+				},
+				{
+					"name": "Dashboard Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/dashboard",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "dashboard"]
+						},
+						"description": "Statistik dashboard admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Search Proposals",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/search-proposals?status=Diajukan",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "search-proposals"],
+							"query": [
+								{
+									"key": "status",
+									"value": "Diajukan"
+								}
+							]
+						},
+						"description": "Cari proposal berdasarkan status"
+					},
+					"response": []
+				}
+			],
+			"description": "Admin operations"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}
